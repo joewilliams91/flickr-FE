@@ -1,8 +1,9 @@
 import React, { Component } from "react";
+import { Link } from "@reach/router";
 
 export default class ImagePage extends Component {
   state = {
-    items: {},
+    items: [],
     searchTerm: ""
   };
 
@@ -12,10 +13,28 @@ export default class ImagePage extends Component {
     return convertedSearch;
   };
 
+  tagSearch = searchTerm => {
+    this.setState({ searchTerm: searchTerm }, () => {
+      this.getImages();
+    });
+  };
+
+  componentDidMount() {
+    if (this.props.location.state.searchTerm) {
+      this.setState(
+        { searchTerm: this.props.location.state.searchTerm },
+        () => {
+          this.getImages();
+        }
+      );
+    }
+  }
+
   getImages = e => {
-    e.preventDefault();
+    e && e.preventDefault();
     const search = this.convertSearch();
     const _this = this;
+    const _localStorage = localStorage;
     const script = document.createElement("script");
     script.src = `http://api.flickr.com/services/feeds/photos_public.gne?format=json&jsoncallback=flickrcb&tags=${search}`;
     script.async = true;
@@ -24,7 +43,13 @@ export default class ImagePage extends Component {
     this.setState({ searchTerm: "" });
 
     window.flickrcb = function(data) {
-      _this.setState({ items: data.items });
+      const imageList = data.items;
+      const filteredList = imageList.filter(
+        image => _localStorage.getItem(image.link) !== JSON.stringify(image)
+      );
+      _this.setState({ items: filteredList }, () => {
+        window.scrollTo(0, 0);
+      });
     };
   };
 
@@ -38,9 +63,9 @@ export default class ImagePage extends Component {
   };
 
   getAuthor = author => {
-    const newAuthor = author.slice(20, author.length - 2)
+    const newAuthor = author.slice(20, author.length - 2);
     return newAuthor;
-  }
+  };
 
   getDateString = date => {
     const dayObj = {
@@ -85,7 +110,7 @@ export default class ImagePage extends Component {
       return day + dayObj[day.slice(1)];
     };
 
-       let newDate = new Date(date).toString().slice(0, -31);
+    let newDate = new Date(date).toString().slice(0, -31);
     newDate = newDate.replace(/(\d{2})(?= \d{4})/g, x => getDateEnding(x));
     newDate = newDate.replace(
       /^(\w+) /g,
@@ -95,21 +120,28 @@ export default class ImagePage extends Component {
       /(\w+)(?= \d{2}\w{2} \d{4})/g,
       x => monthObj[x] + " the "
     );
-    newDate = newDate.replace(/(\d{4})/, `$1 at`)
+    newDate = newDate.replace(/(\d{4})/, `$1 at`);
     return newDate;
+  };
+
+  saveImageToFavourites = (link, image) => {
+    localStorage.setItem(link, image);
+    this.getImages();
   };
 
   render() {
     const { items, searchTerm } = this.state;
-
     return (
       <div className="container">
-        <div className="top-bar">
-          <h1>Images</h1>
+        <div className="header">
+          <h2 style={{ color: "rgb(13, 14, 20)" }}>Images</h2>
           <form onSubmit={this.getImages}>
             <input value={searchTerm} onChange={this.handleChange}></input>
             <button>Search</button>
           </form>
+          <Link to="/favourites" style={{ color: "rgb(13, 14, 20)" }}>
+            <h2>Favourites</h2>
+          </Link>
         </div>
 
         <div className="images-grid">
@@ -130,9 +162,39 @@ export default class ImagePage extends Component {
                     />
                   </div>
                   <div className="search-image-box-bottom">
-                    <p>Author: {this.getAuthor(item.author)}</p>
-                    <p>Taken: {this.getDateString(item.date_taken)}</p>
-                    <p>Title: {item.title}</p>
+                    <h4 className="heading">Author: </h4>{" "}
+                    <p>{this.getAuthor(item.author)}</p>
+                    <h4 className="heading">Taken: </h4>{" "}
+                    <p>{this.getDateString(item.date_taken)}</p>
+                    <h4 className="heading">Title: </h4> <p>{item.title}</p>
+                    <h4 className="heading">Tags: </h4>
+                    <div className="tags">
+                      {item.tags.split(" ").map(tag => {
+                        return (
+                          <p
+                            className="tag"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              this.tagSearch(tag);
+                            }}
+                          >
+                            {tag}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="search-image-box-favourite">
+                    <button
+                      onClick={() => {
+                        this.saveImageToFavourites(
+                          item.link,
+                          JSON.stringify(item)
+                        );
+                      }}
+                    >
+                      Favourite
+                    </button>
                   </div>
                 </div>
               );
