@@ -6,6 +6,8 @@
   align-items: center;
   flex-direction: column;
   font-family: inter;
+  width: 100%;
+  height: 100%;
 }
 .top-bar{
   display: flex;
@@ -37,6 +39,9 @@
   padding: 0.5rem;
   margin: 0.2rem;
   background-color: whitesmoke;
+}
+.modal-div{
+  cursor: pointer;
 }
 .search-image-box-top{
   width: 17rem;
@@ -78,8 +83,90 @@
 }
 .header{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: space-around;
   width: 95%;
+}
+.header-top{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+.header-top-title{
+  text-decoration: underline;
+  color: rgb(13, 14, 20);
+  cursor: pointer;
+}
+.header-form{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.header-input{
+  width: 20rem;
+  padding:5px; 
+  border:1px solid rgb(13, 14, 20); 
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  outline: none;
+}
+.arrow-icon{
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 30px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.search-button{
+  padding: 0;
+  margin: 2%;
+  width: 3rem;
+  height: 3rem;
+  border: solid grey 1px;
+  outline: none;
+  background-color: grey;
+}
+.box-buttons{
+  background-color: white;
+  border: solid white 1px;
+  outline: none;
+  cursor: pointer;
+}
+.box-icon{
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.modal-page{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgb(243, 240, 240);
+  font-family: "inter";
+  height: 100%;
+}
+
+.modal-close{
+  display: flex;
+  justify-content: flex-end;
+  font-family: inter;
+}
+
+.empty-favourites{
+  background-color: white;
+  border: solid black 2px;
+  border-radius: 3px;
+  width: 66rem;
+  height: 20rem;
+  padding: 0.5rem;
+  margin: 0.2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.empty-favourites-text{
+  font-size: 3rem;
 }
